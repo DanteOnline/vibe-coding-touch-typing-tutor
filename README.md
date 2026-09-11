@@ -60,3 +60,43 @@
 2. Авторизация (email + password)
 3. Сохранение прогресса (пользователь начинает работу с уровня который у него сохранился)
 
+# Запуск проекта
+
+## Требования
+
+- Node.js 18+
+- npm
+
+## Установка
+
+```bash
+npm install
+cp .env.example .env
+npx prisma migrate dev
+npm run dev
+```
+
+Приложение будет доступно по адресу [http://localhost:3000](http://localhost:3000).
+
+## Переменные окружения
+
+| Переменная | Описание |
+|------------|----------|
+| `DATABASE_URL` | Путь к SQLite базе (`file:./dev.db`) |
+| `AUTH_SECRET` | Секрет для сессий Auth.js |
+
+## Стек
+
+- Next.js 15, TypeScript, Tailwind CSS, shadcn/ui
+- Prisma + SQLite
+- Auth.js (email + password)
+
+## Настройки тренажёра
+
+Глобальные настройки упражнений находятся в `config/trainer.ts`:
+
+- `maxExerciseLength` — максимальная длина задания (по умолчанию 50)
+- `minTokenLength` / `maxTokenLength` — длина случайных «слов» в задании
+
+Алфавит для обучения — файл `alphabet/main.txt`.
+

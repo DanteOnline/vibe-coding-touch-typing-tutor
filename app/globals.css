@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: hsl(210 20% 98%);
+  --color-foreground: hsl(222 47% 11%);
+  --color-card: hsl(0 0% 100%);
+  --color-card-foreground: hsl(222 47% 11%);
+  --color-primary: hsl(221 83% 53%);
+  --color-primary-foreground: hsl(210 40% 98%);
+  --color-secondary: hsl(210 40% 96%);
+  --color-secondary-foreground: hsl(222 47% 11%);
+  --color-muted: hsl(210 40% 96%);
+  --color-muted-foreground: hsl(215 16% 47%);
+  --color-accent: hsl(210 40% 96%);
+  --color-accent-foreground: hsl(222 47% 11%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(214 32% 91%);
+  --color-input: hsl(214 32% 91%);
+  --color-ring: hsl(221 83% 53%);
+  --radius: 0.75rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme inline {
+    --color-background: hsl(222 47% 7%);
+    --color-foreground: hsl(210 40% 98%);
+    --color-card: hsl(222 47% 10%);
+    --color-card-foreground: hsl(210 40% 98%);
+    --color-primary: hsl(217 91% 60%);
+    --color-primary-foreground: hsl(222 47% 11%);
+    --color-secondary: hsl(217 33% 17%);
+    --color-secondary-foreground: hsl(210 40% 98%);
+    --color-muted: hsl(217 33% 17%);
+    --color-muted-foreground: hsl(215 20% 65%);
+    --color-accent: hsl(217 33% 17%);
+    --color-accent-foreground: hsl(210 40% 98%);
+    --color-destructive: hsl(0 63% 31%);
+    --color-destructive-foreground: hsl(210 40% 98%);
+    --color-border: hsl(217 33% 17%);
+    --color-input: hsl(217 33% 17%);
+    --color-ring: hsl(224 76% 48%);
+  }
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji";
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes flash-error {
+  0%,
+  100% {
+    background-color: var(--color-card);
+  }
+  50% {
+    background-color: color-mix(in srgb, var(--color-destructive) 20%, transparent);
+  }
+}
+
+.animate-flash-error {
+  animation: flash-error 0.5s ease-in-out;
+}
