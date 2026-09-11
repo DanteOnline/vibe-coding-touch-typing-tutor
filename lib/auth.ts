@@ -1,10 +1,12 @@
 import bcrypt from "bcryptjs";
+import { Role } from "@prisma/client";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 
 import { authConfig } from "@/lib/auth.config";
 import { db } from "@/lib/db";
+import { getSyncedUserRole } from "@/lib/roles";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -39,13 +41,42 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           return null;
         }
 
+        const role = await getSyncedUserRole(user.id, user.email);
+
         return {
           id: user.id,
           email: user.email,
+          role,
         };
       },
     }),
   ],
+  callbacks: {
+    ...authConfig.callbacks,
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
+      }
+
+      if (session.user?.id && session.user.email) {
+        session.user.role = await getSyncedUserRole(
+          session.user.id,
+          session.user.email,
+        );
+      } else if (session.user) {
+        session.user.role = (token.role as Role | undefined) ?? Role.USER;
+      }
+
+      return session;
+    },
+  },
 });
 
 export async function hashPassword(password: string): Promise<string> {

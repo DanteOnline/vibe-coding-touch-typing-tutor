@@ -2,7 +2,10 @@
 
 1. Question:
 
-Прежде чем начать работу над проектом. У меня в папке notes будут лежать мои заметки. Скажи как тебя настроить, чтобы ты не учитывал эту папку у себя в контексте и не ходил туда?
+Прежде чем начать работу над проектом. 
+У меня в папке notes будут лежать мои заметки. 
+Скажи как тебя настроить, 
+чтобы ты не учитывал эту папку у себя в контексте и не ходил туда?
 
 Результат:
 
@@ -77,3 +80,68 @@
 Получили приложение и инструкцию по запуску в README.md
 
 6. Ручные тесты (тыкаем, проверяем)
+
+7. Question
+
+Не запускается, скидывает ошибку в question
+
+npm install
+
+> vibe-coding-touch-typing-tutor@0.1.0 postinstall
+> prisma generate
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+Error: 
+EPERM: operation not permitted, rename 'C:\Users\qui11\OneDrive\Documents\otus\vibecoding\vibe-coding-touch-typing-tutor\node_modules\.prisma\client\query_engine-windows.dll.node.tmp17092' -> 'C:\Users\qui11\OneDrive\Documents\otus\vibecoding\vibe-coding-touch-typing-tutor\node_modules\.prisma\client\query_engine-windows.dll.node'
+
+
+npm error code 1
+npm error path C:\Users\qui11\OneDrive\Documents\otus\vibecoding\vibe-coding-touch-typing-tutor
+npm error command failed
+npm error command C:\Windows\system32\cmd.exe /d /s /c prisma generate
+npm error A complete log of this run can be found in: C:\Users\qui11\AppData\Local\npm-cache\_logs\2026-09-11T16_19_02_453Z-debug-0.log
+
+Результат:
+
+Терминал уже запущен - всё отлично работает!
+
+8. Build
+
+Всё пока отлично. Теперь как разработчик напиши автотетсы. 
+И попробуй сделать 100% покрытия.
+Добавь запуск тестов и рассчета покрытия. 
+После того как они будут готовы запускай их каждый раз при новых изменениях в коде. 
+
+Результат:
+
+Тесты и 100% покрытия.
+
+9. Ask
+
+Ты специалист по безопасности
+Найди потенциальные уязвимости в нашем приложении
+Выдай их списком по критичности
+Если они есть, то скажи способы профилактики (несколько)
+
+Результат:
+
+Отчет
+
+10. Plan
+
+1. Сделай fake door на кнопку "Купить подписку"
+Кнопка будет на странице с тренажором
+2. Она будет вести на страницу где написано "Раздел в разработке"
+3. Нам нужно собирать метрики CTR, и Bounce Rate по нажатию на кнопку
+Подумай что для этого нужно.
+4. Метрики будут отображаться в виде графиков в разделе адмники. Туда будет доступ у пользователя с правами Администратор
+2 графика по CTR и Bounce Rate
+
+результат:
+
+План
+
+11. Build
+
+Делай

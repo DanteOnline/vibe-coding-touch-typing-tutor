@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { hashPassword } from "@/lib/auth";
 import { db } from "@/lib/db";
-
-const registerSchema = z.object({
-  email: z.string().email("Некорректный email"),
-  password: z.string().min(6, "Пароль должен быть не короче 6 символов"),
-});
+import { resolveRoleForEmail } from "@/lib/roles";
+import { registerSchema } from "@/lib/validation";
 
 export async function POST(request: Request) {
   try {
@@ -36,6 +32,7 @@ export async function POST(request: Request) {
       data: {
         email,
         passwordHash,
+        role: resolveRoleForEmail(email),
       },
     });
 

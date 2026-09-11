@@ -7,12 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AnalyticsEventType {
+  TRAINER_IMPRESSION
+  SUBSCRIPTION_CLICK
+  SUBSCRIPTION_PAGE_VIEW
+  SUBSCRIPTION_PAGE_EXIT
+}
+
 model User {
-  id                String    @id @default(cuid())
-  email             String    @unique
+  id                String           @id @default(cuid())
+  email             String           @unique
   passwordHash      String
-  currentLevel      Int       @default(1)
+  role              Role             @default(USER)
+  currentLevel      Int              @default(1)
   courseCompletedAt DateTime?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  analyticsEvents   AnalyticsEvent[]
+}
+
+model AnalyticsEvent {
+  id         String             @id @default(cuid())
+  userId     String
+  sessionId  String
+  eventType  AnalyticsEventType
+  durationMs Int?
+  createdAt  DateTime           @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([eventType, createdAt])
+  @@index([sessionId])
 }

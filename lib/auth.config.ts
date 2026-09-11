@@ -1,4 +1,13 @@
+import { Role } from "@prisma/client";
 import type { NextAuthConfig } from "next-auth";
+
+function isProtectedRoute(pathname: string) {
+  return (
+    pathname.startsWith("/trainer") ||
+    pathname.startsWith("/subscription") ||
+    pathname.startsWith("/admin")
+  );
+}
 
 export const authConfig = {
   pages: {
@@ -11,12 +20,11 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request }) {
       const isLoggedIn = !!auth?.user;
-      const isTrainerRoute = request.nextUrl.pathname.startsWith("/trainer");
+      const pathname = request.nextUrl.pathname;
       const isAuthRoute =
-        request.nextUrl.pathname === "/login" ||
-        request.nextUrl.pathname === "/register";
+        pathname === "/login" || pathname === "/register";
 
-      if (isTrainerRoute) {
+      if (isProtectedRoute(pathname)) {
         return isLoggedIn;
       }
 
@@ -29,12 +37,16 @@ export const authConfig = {
     jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = token.id as string;
+      }
+      if (session.user) {
+        session.user.role = (token.role as Role | undefined) ?? Role.USER;
       }
       return session;
     },

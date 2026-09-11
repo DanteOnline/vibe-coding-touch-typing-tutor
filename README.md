@@ -100,3 +100,15 @@ npm run dev
 
 Алфавит для обучения — файл `alphabet/main.txt`.
 
+## Тесты
+
+```bash
+npm run test           # однократный запуск
+npm run test:watch     # watch-режим при изменениях
+npm run test:coverage  # запуск с отчётом покрытия
+```
+
+Покрытие рассчитывается для `lib/`, `components/`, `app/`, `config/` и `middleware.ts`. Порог — 100%.
+
+Cursor hook в `.cursor/hooks.json` автоматически запускает `npm run test` после редактирования исходных файлов агентом.
+

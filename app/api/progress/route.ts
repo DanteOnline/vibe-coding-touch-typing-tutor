@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { getMaxLevel, loadAlphabet } from "@/lib/alphabet";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { clampLevel } from "@/lib/levels";
-
-const patchSchema = z.object({
-  currentLevel: z.number().int().positive(),
-  markCourseCompleted: z.boolean().optional(),
-});
+import { patchSchema } from "@/lib/validation";
 
 async function getAuthenticatedUser() {
   const session = await auth();
