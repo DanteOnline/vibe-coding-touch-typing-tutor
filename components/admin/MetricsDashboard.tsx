@@ -19,9 +19,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import type { DailyMetricPoint } from "@/lib/analytics";
+import type { FunnelMetrics } from "@/lib/funnel-analytics";
+
+import { FunnelMetricsPanel } from "./FunnelMetricsPanel";
 
 type MetricsResponse = {
   daily: DailyMetricPoint[];
+  funnel: FunnelMetrics;
 };
 
 function MetricChart({
@@ -66,6 +70,7 @@ function MetricChart({
 
 export function MetricsDashboard() {
   const [data, setData] = useState<DailyMetricPoint[]>([]);
+  const [funnel, setFunnel] = useState<FunnelMetrics | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -79,6 +84,7 @@ export function MetricsDashboard() {
       })
       .then((payload) => {
         setData(payload.daily);
+        setFunnel(payload.funnel);
       })
       .catch(() => {
         setError("Не удалось загрузить метрики");
@@ -98,9 +104,10 @@ export function MetricsDashboard() {
 
   return (
     <div className="grid gap-6">
+      {funnel && <FunnelMetricsPanel funnel={funnel} />}
       <MetricChart
         title="CTR"
-        description="Доля кликов по кнопке «Купить подписку» от показов на тренажёре"
+        description="Доля кликов по кнопке «Разблокировать все уровни» от показов на тренажёре"
         dataKey="ctr"
         color="#2563eb"
         data={data}

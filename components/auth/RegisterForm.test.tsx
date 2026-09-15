@@ -5,14 +5,17 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { RegisterForm } from "@/components/auth/RegisterForm";
 
 const push = vi.fn();
+let searchParams = new URLSearchParams();
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push }),
+  useSearchParams: () => searchParams,
 }));
 
 describe("RegisterForm", () => {
   beforeEach(() => {
     push.mockReset();
+    searchParams = new URLSearchParams();
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
@@ -40,6 +43,20 @@ describe("RegisterForm", () => {
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith("/login");
+    });
+  });
+
+  it("redirects to login with subscription callback for full-access intent", async () => {
+    searchParams = new URLSearchParams("intent=full-access");
+    const user = userEvent.setup();
+    render(<RegisterForm />);
+
+    await user.type(screen.getByLabelText("Email"), "test@example.com");
+    await user.type(screen.getByLabelText("Пароль"), "secret123");
+    await user.click(screen.getByRole("button", { name: "Зарегистрироваться" }));
+
+    await waitFor(() => {
+      expect(push).toHaveBeenCalledWith("/login?callbackUrl=%2Fsubscription");
     });
   });
 

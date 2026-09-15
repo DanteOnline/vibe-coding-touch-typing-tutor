@@ -38,7 +38,9 @@ describe("SubscribeButton", () => {
     const user = userEvent.setup();
     render(<SubscribeButton />);
 
-    await user.click(screen.getByRole("button", { name: "Купить подписку" }));
+    await user.click(
+      screen.getByRole("button", { name: "Разблокировать все уровни" }),
+    );
 
     await waitFor(() => {
       expect(push).toHaveBeenCalledWith(
@@ -90,10 +92,14 @@ describe("SubscribeButton", () => {
     const user = userEvent.setup();
     render(<SubscribeButton />);
 
-    await user.click(screen.getByRole("button", { name: "Купить подписку" }));
+    await user.click(
+      screen.getByRole("button", { name: "Разблокировать все уровни" }),
+    );
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Купить подписку" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: "Разблокировать все уровни" }),
+      ).toBeEnabled();
     });
     expect(push).not.toHaveBeenCalled();
   });

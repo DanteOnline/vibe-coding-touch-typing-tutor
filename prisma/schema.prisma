@@ -17,6 +17,8 @@ enum AnalyticsEventType {
   SUBSCRIPTION_CLICK
   SUBSCRIPTION_PAGE_VIEW
   SUBSCRIPTION_PAGE_EXIT
+  LANDING_CTA_CLICK
+  WAITLIST_JOIN
 }
 
 model User {
@@ -26,6 +28,7 @@ model User {
   role              Role             @default(USER)
   currentLevel      Int              @default(1)
   courseCompletedAt DateTime?
+  waitlistJoinedAt  DateTime?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
   analyticsEvents   AnalyticsEvent[]

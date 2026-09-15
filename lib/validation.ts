@@ -20,3 +20,7 @@ export const analyticsEventSchema = z.object({
 export const metricsQuerySchema = z.object({
   days: z.coerce.number().int().positive().max(90).optional(),
 });
+
+export const waitlistSchema = z.object({
+  sessionId: z.string().uuid(),
+});

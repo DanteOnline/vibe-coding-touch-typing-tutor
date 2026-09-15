@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mockRequireAdmin = vi.fn();
 const mockGetDailyMetrics = vi.fn();
+const mockGetFunnelMetrics = vi.fn();
 
 vi.mock("@/lib/admin", () => ({
   requireAdminUser: () => mockRequireAdmin(),
@@ -11,10 +12,25 @@ vi.mock("@/lib/analytics", () => ({
   getDailyMetrics: (...args: unknown[]) => mockGetDailyMetrics(...args),
 }));
 
+vi.mock("@/lib/funnel-analytics", () => ({
+  getFunnelMetrics: (...args: unknown[]) => mockGetFunnelMetrics(...args),
+}));
+
 describe("GET /api/admin/metrics", () => {
   beforeEach(() => {
     mockRequireAdmin.mockReset();
     mockGetDailyMetrics.mockReset();
+    mockGetFunnelMetrics.mockReset();
+    mockGetFunnelMetrics.mockResolvedValue({
+      landingCtaClicks: 0,
+      registrations: 0,
+      trainerImpressions: 0,
+      subscriptionClicks: 0,
+      waitlistJoins: 0,
+      landingToRegisterRate: 0,
+      registerToTrainerRate: 0,
+      trainerToClickRate: 0,
+    });
   });
 
   it("returns forbidden for non-admin", async () => {
@@ -38,6 +54,7 @@ describe("GET /api/admin/metrics", () => {
 
     expect(response.status).toBe(200);
     expect(data.daily).toHaveLength(1);
+    expect(data.funnel).toBeDefined();
   });
 
   it("returns validation error for invalid query", async () => {

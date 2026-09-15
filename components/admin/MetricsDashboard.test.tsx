@@ -39,6 +39,16 @@ describe("MetricsDashboard", () => {
               bounceRate: 50,
             },
           ],
+          funnel: {
+            landingCtaClicks: 10,
+            registrations: 5,
+            trainerImpressions: 8,
+            subscriptionClicks: 2,
+            waitlistJoins: 1,
+            landingToRegisterRate: 50,
+            registerToTrainerRate: 160,
+            trainerToClickRate: 25,
+          },
         }),
       }),
     );
@@ -56,6 +66,7 @@ describe("MetricsDashboard", () => {
     await waitFor(() => {
       expect(screen.getByText("CTR")).toBeInTheDocument();
       expect(screen.getByText("Bounce Rate")).toBeInTheDocument();
+      expect(screen.getByText("Воронка лендинга")).toBeInTheDocument();
     });
 
     expect(screen.getAllByTestId("chart")).toHaveLength(2);

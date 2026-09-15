@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { landingCopy } from "@/config/landing";
 import {
   createAnalyticsSessionId,
   trackAnalyticsEvent,
@@ -63,8 +64,13 @@ export function SubscribeButton() {
   };
 
   return (
-    <Button onClick={handleClick} disabled={loading}>
-      {loading ? "Переход..." : "Купить подписку"}
-    </Button>
+    <div className="flex flex-col items-end gap-1 text-right">
+      <Button onClick={handleClick} disabled={loading}>
+        {loading ? "Переход..." : landingCopy.subscribe.button}
+      </Button>
+      <p className="max-w-xs text-xs text-muted-foreground">
+        {landingCopy.subscribe.subtitle}
+      </p>
+    </div>
   );
 }

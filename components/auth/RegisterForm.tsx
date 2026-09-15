@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, useState } from "react";
+
+import { landingCta } from "@/config/landing";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +19,7 @@ import { Label } from "@/components/ui/label";
 
 export function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -41,7 +44,13 @@ export function RegisterForm() {
       return;
     }
 
-    router.push("/login");
+    const intent = searchParams.get("intent");
+    const loginUrl =
+      intent === landingCta.fullAccessIntent
+        ? `/login?callbackUrl=${encodeURIComponent(landingCta.subscriptionPath)}`
+        : "/login";
+
+    router.push(loginUrl);
   };
 
   return (

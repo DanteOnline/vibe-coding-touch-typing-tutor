@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SessionProvider } from "@/components/providers/SessionProvider";
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <SessionProvider>
           <Header />
           <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+          <Footer />
         </SessionProvider>
       </body>
     </html>

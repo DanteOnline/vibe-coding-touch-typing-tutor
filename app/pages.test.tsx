@@ -45,7 +45,30 @@ vi.mock("@/components/auth/RegisterForm", () => ({
 }));
 
 vi.mock("@/components/trainer/SubscribeButton", () => ({
-  SubscribeButton: () => <button type="button">Купить подписку</button>,
+  SubscribeButton: () => (
+    <button type="button">Разблокировать все уровни</button>
+  ),
+}));
+
+vi.mock("@/components/landing/LandingPage", () => ({
+  LandingPage: ({
+    isAuthenticated,
+    isOnWaitlist,
+  }: {
+    isAuthenticated: boolean;
+    isOnWaitlist: boolean;
+  }) => (
+    <div>
+      Landing Page {isAuthenticated ? "auth" : "guest"}{" "}
+      {isOnWaitlist ? "waitlist" : "free"}
+    </div>
+  ),
+}));
+
+vi.mock("@/components/landing/LandingCtaButton", () => ({
+  LandingCtaButton: ({ label }: { label: string }) => (
+    <a href="#metrics">{label}</a>
+  ),
 }));
 
 vi.mock("@/components/subscription/SubscriptionPlaceholder", () => ({
@@ -64,8 +87,7 @@ describe("app pages", () => {
     const HomePage = (await import("@/app/page")).default;
     render(await HomePage());
 
-    expect(screen.getByText("Тренажёр слепой печати")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Начать" })).toBeInTheDocument();
+    expect(screen.getByText("Landing Page guest free")).toBeInTheDocument();
   });
 
   it("renders home page for authenticated users", async () => {
@@ -73,13 +95,15 @@ describe("app pages", () => {
     vi.mocked(auth).mockResolvedValue({
       user: { id: "1", email: "test@example.com" },
     } as never);
+    const { db } = await import("@/lib/db");
+    vi.mocked(db.user.findUnique).mockResolvedValue({
+      waitlistJoinedAt: null,
+    } as never);
 
     const HomePage = (await import("@/app/page")).default;
     render(await HomePage());
 
-    expect(
-      screen.getByRole("link", { name: "Перейти к тренажёру" }),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Landing Page auth free")).toBeInTheDocument();
   });
 
   it("renders login page", async () => {
@@ -144,10 +168,56 @@ describe("app pages", () => {
   });
 
   it("renders subscription page", async () => {
+    redirect.mockReset();
+    const { auth } = await import("@/lib/auth");
+    const { db } = await import("@/lib/db");
+
+    vi.mocked(auth).mockResolvedValue({
+      user: { id: "user-1", email: "test@example.com" },
+    } as never);
+    vi.mocked(db.user.findUnique).mockResolvedValue({
+      waitlistJoinedAt: null,
+    } as never);
+
     const SubscriptionPage = (await import("@/app/subscription/page")).default;
-    render(<SubscriptionPage />);
+    render(await SubscriptionPage());
 
     expect(screen.getByText("Subscription Placeholder")).toBeInTheDocument();
+  });
+
+  it("redirects unauthenticated users from subscription page", async () => {
+    redirect.mockClear();
+    const { auth } = await import("@/lib/auth");
+    vi.mocked(auth).mockResolvedValue(null);
+
+    const SubscriptionPage = (await import("@/app/subscription/page")).default;
+
+    await expect(SubscriptionPage()).rejects.toThrow("NEXT_REDIRECT:/login");
+  });
+
+  it("redirects when subscription user is missing in db", async () => {
+    redirect.mockClear();
+    const { auth } = await import("@/lib/auth");
+    const { db } = await import("@/lib/db");
+
+    vi.mocked(auth).mockResolvedValue({
+      user: { id: "user-1", email: "test@example.com" },
+    } as never);
+    vi.mocked(db.user.findUnique).mockResolvedValue(null);
+
+    const SubscriptionPage = (await import("@/app/subscription/page")).default;
+
+    await expect(SubscriptionPage()).rejects.toThrow("NEXT_REDIRECT:/login");
+  });
+
+  it("renders investors page", async () => {
+    const InvestorsPage = (await import("@/app/investors/page")).default;
+    render(<InvestorsPage />);
+
+    expect(screen.getByText("Investor relations")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "Запросить pitch deck" }),
+    ).toBeInTheDocument();
   });
 
   it("redirects non-admin users from admin page", async () => {

@@ -3,7 +3,7 @@
 import { AnalyticsEventType } from "@prisma/client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -13,13 +13,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { trackAnalyticsEvent } from "@/lib/analytics-client";
+import { landingCopy } from "@/config/landing";
+import {
+  createAnalyticsSessionId,
+  trackAnalyticsEvent,
+} from "@/lib/analytics-client";
 
-export function SubscriptionPlaceholder() {
+type SubscriptionPlaceholderProps = {
+  isOnWaitlist: boolean;
+};
+
+export function SubscriptionPlaceholder({
+  isOnWaitlist: initialIsOnWaitlist,
+}: SubscriptionPlaceholderProps) {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("sid");
   const startedAtRef = useRef(Date.now());
   const exitSentRef = useRef(false);
+  const [isOnWaitlist, setIsOnWaitlist] = useState(initialIsOnWaitlist);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const sendExitEvent = useCallback(async () => {
     if (!sessionId || exitSentRef.current) {
@@ -78,18 +91,62 @@ export function SubscriptionPlaceholder() {
     void sendExitEvent();
   };
 
+  const handleJoinWaitlist = async () => {
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId: sessionId ?? createAnalyticsSessionId(),
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error ?? "Не удалось встать в waitlist");
+        return;
+      }
+
+      setIsOnWaitlist(true);
+    } catch {
+      setError("Не удалось встать в waitlist");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <Card className="mx-auto max-w-lg">
       <CardHeader>
-        <CardTitle>Раздел в разработке</CardTitle>
-        <CardDescription>
-          Подписка скоро появится. Спасибо за интерес к продукту.
-        </CardDescription>
+        <CardTitle>{landingCopy.subscription.title}</CardTitle>
+        <CardDescription>{landingCopy.subscription.description}</CardDescription>
       </CardHeader>
-      <CardContent>
-        <Button asChild onClick={handleReturnClick}>
-          <Link href="/trainer">Вернуться к тренажёру</Link>
-        </Button>
+      <CardContent className="space-y-4">
+        {isOnWaitlist ? (
+          <>
+            <p className="text-sm text-muted-foreground">
+              {landingCopy.subscription.joinedNote}
+            </p>
+            <Button asChild onClick={handleReturnClick}>
+              <Link href="/trainer">{landingCopy.subscription.continueCta}</Link>
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button onClick={() => void handleJoinWaitlist()} disabled={loading}>
+              {loading
+                ? "Добавляем..."
+                : landingCopy.subscription.joinCta}
+            </Button>
+            <Button asChild variant="outline" onClick={handleReturnClick}>
+              <Link href="/trainer">{landingCopy.subscription.continueCta}</Link>
+            </Button>
+          </>
+        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
       </CardContent>
     </Card>
   );
